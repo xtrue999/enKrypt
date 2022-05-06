@@ -46,6 +46,8 @@ const checkLocal = (e: any) => {
     box-sizing: border-box;
     border-radius: 2px;
     text-align: center;
+    margin-left: 2px;
+    margin-top: 2px;
 
     svg {
       display: none;

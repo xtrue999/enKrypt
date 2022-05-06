@@ -17,6 +17,11 @@ module.exports = {
       entry: "./src/ui/onboard/main.ts",
       title: "enkrypt extension onboard",
     },
+    library: {
+      template: "public/index.html",
+      entry: "./src/ui/library/main.ts",
+      title: "enkrypt extension UI library",
+    },
   },
   indexPath: "index.html",
   devServer: {
