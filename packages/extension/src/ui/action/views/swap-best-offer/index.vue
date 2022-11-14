@@ -169,6 +169,7 @@ const nativeTokenPrice = ref<string>();
 const warning = ref<SwapBestOfferWarnings>();
 const gasDifference = ref<string>();
 const priceDifference = ref<string>();
+const ignoreGas = ref(false);
 
 const setWarning = () => {
   if (
@@ -275,6 +276,7 @@ onMounted(async () => {
   }
 
   if (props.network.name === "DOT" || props.network.name === "KSM") {
+    ignoreGas.value = true;
     fee.nativeSymbol = props.network.name;
     fee.nativeValue = fromBase(
       swapData.trades[0].txs[0].gas as `0x${string}`,
@@ -339,7 +341,8 @@ const isDisabled = computed(() => {
     warning.value === undefined ||
     warning.value === SwapBestOfferWarnings.EXISTENTIAL_DEPOSIT ||
     warning.value === SwapBestOfferWarnings.NOT_ENOUGH_GAS ||
-    gasCostValues.value[selectedFee.value].nativeValue === "0"
+    (!ignoreGas.value &&
+      gasCostValues.value[selectedFee.value].nativeValue === "0")
   ) {
     return true;
   }
@@ -392,7 +395,6 @@ const selectFee = (option: GasPriceTypes) => {
 };
 
 const setTransactionFees = async (txs: Transaction[]) => {
-  console.log(txs);
   const gasPromises = txs.map((tx) => {
     return tx.getGasCosts().then(async (gasvals) => {
       const getConvertedVal = (type: GasPriceTypes) =>
@@ -434,7 +436,6 @@ const setTransactionFees = async (txs: Transaction[]) => {
   });
 
   const gasVals = await Promise.all(gasPromises);
-  console.log(gasVals);
 
   const finalVal = gasVals.reduce((prev, curr) => {
     if (!prev) return curr;

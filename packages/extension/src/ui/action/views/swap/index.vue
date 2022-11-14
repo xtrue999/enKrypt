@@ -303,7 +303,6 @@ onMounted(async () => {
   props.network
     .getAllTokens(props.accountInfo.selectedAccount?.address as string)
     .then(async (tokens) => {
-      console.log(tokens[0]);
       const api = await props.network.api();
 
       const balancePromises = tokens.map((token) => {
@@ -478,7 +477,6 @@ const toggleSwapError = () => {
 
 const setMax = () => {
   swapMax.value = true;
-  console.log("max");
 };
 
 const sendButtonTitle = () => {
