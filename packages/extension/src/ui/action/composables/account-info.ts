@@ -16,7 +16,7 @@ export default (
     );
     let balance = "0";
     if (selectedAccountIdx > -1) {
-      balance = accountInfo.value.activeBalances[selectedAccountIdx];
+      balance = accountInfo.value.activeBalances[selectedAccountIdx].value;
     }
     return balance !== "~" ? formatFloatingPointValue(balance).value : balance;
   });

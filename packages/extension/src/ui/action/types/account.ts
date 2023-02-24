@@ -1,4 +1,5 @@
 import { EnkryptAccount } from "@enkryptcom/types";
+import { Ref } from "vue";
 import { Token } from "./token";
 
 export interface Account {
@@ -12,5 +13,5 @@ export interface AccountsHeaderData {
   selectedAccount: EnkryptAccount | null;
   activeAccounts: EnkryptAccount[];
   inactiveAccounts: EnkryptAccount[];
-  activeBalances: string[];
+  activeBalances: Ref<string>[];
 }

@@ -10,7 +10,7 @@
         {{ name }}
       </p>
       <p class="accounts-item__info-amount">
-        {{ $filters.formatFloatingPointValue(amount).value }} {{ symbol }}
+        {{ $filters.formatFloatingPointValue(amount.value).value }} {{ symbol }}
         <span>{{ $filters.replaceWithEllipsis(address, 6, 4) }}</span>
       </p>
     </div>
@@ -40,7 +40,7 @@
 import DoneIcon from "@action/icons/common/done_icon.vue";
 import MoreIcon from "@action/icons/common/more-icon.vue";
 import AccountsListItemMenu from "./accounts-list-item-menu.vue";
-import { PropType, ref } from "vue";
+import { PropType, ref, Ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 const openEdit = ref(false);
@@ -57,8 +57,8 @@ defineProps({
     default: "",
   },
   amount: {
-    type: String,
-    default: "",
+    type: Object as PropType<Ref<string>>,
+    default: () => ref("0"),
   },
   symbol: {
     type: String,

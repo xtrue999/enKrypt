@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, Ref } from "vue";
 import AppMenu from "./components/app-menu/index.vue";
 import NetworkMenu from "./components/network-menu/index.vue";
 import AccountsHeader from "./components/accounts-header/index.vue";
@@ -235,7 +235,7 @@ const setNetwork = async (network: BaseNetwork) => {
     activeAccounts,
     inactiveAccounts,
     selectedAccount,
-    activeBalances: activeAccounts.map(() => "~"),
+    activeBalances: activeAccounts.map(() => ref("~")),
   };
   currentNetwork.value = network;
   router.push({ name: "assets", params: { id: network.name } });
@@ -272,11 +272,13 @@ const setNetwork = async (network: BaseNetwork) => {
     try {
       const api = await network.api();
       const activeBalancePromises = activeAccounts.map((acc) =>
-        api.getBalance(acc.address)
+        (api as any).getBalanceRef(acc.address)
       );
       Promise.all(activeBalancePromises).then((balances) => {
         accountHeaderData.value.activeBalances = balances.map((bal) =>
-          fromBase(bal, network.decimals)
+          computed(() =>
+            fromBase((bal as unknown as Ref).value, network.decimals)
+          )
         );
       });
     } catch (e) {

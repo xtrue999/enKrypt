@@ -17,6 +17,7 @@ import { NFTCollection } from "./nft";
 import { BaseNetwork } from "./base-network";
 import { BaseToken } from "./base-token";
 import { BTCRawInfo, EthereumRawInfo, SubscanExtrinsicInfo } from "./activity";
+import { Ref } from "vue";
 
 export enum ProviderName {
   enkrypt = "enkrypt",

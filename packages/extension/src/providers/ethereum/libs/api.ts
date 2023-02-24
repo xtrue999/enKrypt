@@ -1,18 +1,38 @@
 import { EthereumRawInfo } from "@/types/activity";
 import { ProviderAPIInterface } from "@/types/provider";
 import { isArray } from "lodash";
+import { defineStore, StoreDefinition } from "pinia";
+import { computed, ref, Ref } from "vue";
 import Web3Eth from "web3-eth";
 import { numberToHex, toBN } from "web3-utils";
 import { ERC20TokenInfo } from "../types";
 import erc20 from "./abi/erc20";
 
+const stores: Record<string, StoreDefinition> = {};
+
 class API implements ProviderAPIInterface {
   node: string;
   web3: Web3Eth;
+  store: StoreDefinition;
 
   constructor(node: string) {
     this.node = node;
     this.web3 = new Web3Eth(this.node);
+    this.store = stores[this.node]
+      ? stores[this.node]
+      : defineStore(`balances: ${this.node}`, () => {
+          const balances: Record<string, Ref<string>> = {};
+          const updateBalance = (address: string, balance: string) => {
+            if (!balances[address]) balances[address] = ref("0");
+            balances[address].value = balance;
+          };
+          const getBalance = computed(() => (address: string) => {
+            if (!balances[address]) balances[address] = ref("0");
+            return balances[address];
+          });
+          return { balances, updateBalance, getBalance };
+        });
+    stores[this.node] = this.store;
   }
 
   public get api() {
@@ -52,7 +72,18 @@ class API implements ProviderAPIInterface {
     }
   }
   getBalance(address: string): Promise<string> {
-    return this.web3.getBalance(address);
+    const store = this.store();
+    return this.web3.getBalance(address).then((bal) => {
+      store.updateBalance(address, bal);
+      return bal;
+    });
+  }
+  getBalanceRef(address: string): Promise<Ref<string>> {
+    const store = this.store();
+    this.web3.getBalance(address).then((balance) => {
+      store.updateBalance(address, balance);
+    });
+    return store.getBalance(address);
   }
   getTokenInfo = async (contractAddress: string): Promise<ERC20TokenInfo> => {
     const contract = new this.web3.Contract(erc20 as any, contractAddress);
